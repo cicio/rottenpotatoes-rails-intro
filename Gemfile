@@ -54,4 +54,5 @@ group :production do
   gem 'rails_12factor'
 end
 
-
+#Adding puma webserver for better performance in Heroku
+gem 'puma'
