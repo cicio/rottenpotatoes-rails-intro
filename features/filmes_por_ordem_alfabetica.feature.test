@@ -1,0 +1,13 @@
+#language: sp
+Propriedade: Ordenar Filmes por Orden Alfabetica 
+  Como um critico de filmes
+  Para ser mais facil rever e editar as criticas
+  Quero poder ver os filmes na table por ordem alfabetica
+  
+  Cenario: Habilitar Link nos Cabecarios de Colunas da Tabela
+    Dado que existem os seguintes filmes:
+    |Movie Title            |Rating |Release Date   |
+    |Inception				|PG-13	|2010-07-16		|
+    |It's Complicated		|R		|2009-12-25		|
+    |SaaS The Movie			|G		|2012-01-14		|
+    
