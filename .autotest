@@ -1,4 +1,5 @@
 Autotest.add_hook :initialize do |at|
   # Ignore files in tmp/
-  at.add_exception %r%^\./tmp%
+  #at.add_exception %r%^\./tmp%
+  %w{tmp .git webrat.log vendor index .DS_Store ._}.each {|exception| at.add_exception(exception)}
 end
