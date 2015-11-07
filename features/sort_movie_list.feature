@@ -13,10 +13,9 @@ Feature: Sort List of Movies
 	
 	
 	Scenario: Enabling Movies Table Column Headers as Links
-	  When I visit the "index page"
-	  Then I should see a "Movie Title" link within "table head"
-	  And I should see a "Release Date" link within "table head"
-	  And I should see "Rating" within "table head"
+	  When I visit the "index" page
+	  Then I should see a "Movie Title" and "Release Date" Links within "table head"
+	  But  I should see "Rating" within "table head" without a link
 	
     
     
