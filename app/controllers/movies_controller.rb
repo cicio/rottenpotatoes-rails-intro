@@ -11,7 +11,13 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    if params[:id]
+      @movies = Movie.all.order(params[:id].gsub(/_header/,""))
+      params[:id] =~ /title/ ? (@t,@r = "hilite","") : (@r,@t = "hilite","") 
+    else
+      @movies = Movie.all
+      @t,@r = '',''
+    end
   end
 
   def new
