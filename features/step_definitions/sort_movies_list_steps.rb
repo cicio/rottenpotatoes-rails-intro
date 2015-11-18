@@ -28,6 +28,13 @@ Then(/^I should see "(.*?)" within "(.*?)"$/) do |col, scope|
   end
 end
 
+Then(/^I should not see "(.*?)" within "(.*?)"$/) do |string, scope|
+  within(scope) do
+    expect(has_no_text?(string))
+  end
+end
+
+
 When(/^I click on "(.*?)"$/) do |link1|
   click_on(link1)
   expect(current_path).to eq movies_path

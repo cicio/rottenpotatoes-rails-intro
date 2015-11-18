@@ -1,0 +1,100 @@
+class MoviesController < ApplicationController
+
+  def show
+    id = params[:id] # retrieve movie ID from URI route
+    @movie = Movie.find(id) # look up movie by unique ID
+    # will render app/views/movies/show.<extension> by default
+    @selections = session[:ratings]
+  end
+
+  def index
+    @sort_by = params[:id]  #:id is either title_header or release_date_header
+    @all_ratings = Movie.ratings #create a list of all movie ratings. Use Movie.ratings class method
+    
+    #If the user explicitly includes new sorting/filtering settings in params[],
+    #the session should not override them. On the contrary, the new settings
+    # should be remembered in the session.
+    
+    #@selections is an array of the selected ratings. Default is all ratings selected
+    
+    if params[:ratings]
+      @selections = params[:ratings] 
+      session[:ratings] = @selections
+      
+    #If a user unchecks all checkboxes, use the settings stored in the session[] 
+    # hash (it doesn’t make sense for a user to uncheck all the boxes).  
+      
+    elsif params[:commit] == 'Refresh'
+      @selections = session[:ratings]
+    else
+      @selections = @all_ratings
+    end
+
+    #case statements to handle sorting by title or by release_date
+    case @sort_by 
+    when 'title_header'
+      session.delete(:order) if session[:order] != :title
+      @t, @r = 'hilite', '' #highliht title (@t) but not release_date (@r)
+      #find all movies and sort by title
+      @movies = Movie.order(:title).
+      select {|movie| movie.rating.in?(@selections)}
+      session[:order] = :title
+       
+    when 'release_date_header'
+      session.delete(:order) if session[:order] != :release_date
+      
+      @r, @t = 'hilite', '' #highliht release_date (@r) but not title (@t)
+      #find all movies and sort by release_date
+      @movies = Movie.order(:release_date).
+      select {|movie| movie.rating.in?(@selections)}
+      session[:order] = :release_date
+      
+    else
+      #Remember the last sort order by Title or Release date and show only movies mathcing selected ratings 
+      #@selections = session[:ratings] if params[:ratings]       
+      @movies = Movie.order(:id).
+      select {|movie| movie.rating.in?(@selections)}
+      session[:order] = :id
+      #after submit 'Refresh' the selctions will be lost for the next view. 
+      #save the selections in session, for redisplay in the next view, where 
+      #only the selected ratings are displayed 
+      session[:ratings] = @selections      
+    end
+    #save session.values in variables to use in views instead of the session Hash.
+    @sorted = session[:order]
+    @selections = session[:ratings]
+  end
+
+  def new
+    # default: render 'new' template
+  end
+
+  def create
+    @movie = Movie.create!(params[:movie])
+    flash[:notice] = "#{@movie.title} was successfully created."
+    redirect_to movies_path
+  end
+
+  def edit
+    @movie = Movie.find params[:id]
+  end
+
+  def update
+    @movie = Movie.find params[:id]
+    @movie.update_attributes!(params[:movie])
+    flash[:notice] = "#{@movie.title} was successfully updated."
+    redirect_to movie_path(@movie)
+  end
+
+  def destroy
+    @movie = Movie.find(params[:id])
+    @movie.destroy
+    flash[:notice] = "Movie '#{@movie.title}' deleted."
+    redirect_to movies_path
+  end
+  
+  def Movie.ratings
+    Movie.all.map {|movie| movie.rating}.uniq
+  end
+
+end

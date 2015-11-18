@@ -1,0 +1,31 @@
+Feature: Filter the list of movies by rating 
+
+	As a parent of movie loving children
+	In order to allow the children to select age appropriate movies
+	I want to be able to filter movie list by ratings
+	
+	Background:
+	Given the following movies and ratings exist:
+    |title                  |rating |release_date   |
+    |Inception				|PG-13	|2010-07-16		|
+    |It's Complicated		|R		|2009-12-25		|
+    |SaaS The Movie			|G		|2012-01-14		|
+    |Cicio The SaaSy		|PG		|2015-01-14		|
+	
+	
+Scenario: Add checkboxes for filtering the list of movies
+	  When I visit the "index" page
+	  Then I should see check boxes for all movie ratings
+	  And the check boxes should be within an element with id:"rating_form"
+	  
+	  
+Scenario: Show only movies with selected MPAA ratings
+      When I check the following boxes:"G, PG"
+      And I click on "Refresh"
+      Then I should see movie with rating "Cicio The SaaSy, PG"
+      And I should see movie with rating "SaaS The Movie, G"
+      But I should not see movie with rating "Inception, PG-13"
+      And I should not see movie with rating "It's Complicated, R"
+      
+	  
+	

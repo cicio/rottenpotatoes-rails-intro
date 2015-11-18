@@ -12,25 +12,28 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
+    #@sort_by = params[:id]
+    
     if params[:ratings]
-      params[:ratings].respond_to?(:keys) ? @select_ratings = params[:ratings].keys :
-        									@select_ratings = params[:ratings]
-      session[:ratings] = @select_ratings
-	else
-	  @select_ratings = @all_ratings
-	  session[:ratings] = @select_ratings
-	end
-    params[:id] ? @by_column = params[:id].gsub(/_header/,"") : @by_column = 'id'
-    @by_column =~ /title/ ? (@t,@r = "hilite","") : (@r,@t = "hilite","")
-    @t,@r = '','' if @by_column =~ /id/
+      session[:ratings]
+      @selections = params[:ratings].keys
+      session[:ratings] = @selections
+    elsif params[:commit] == "Refresh"
+      @selections = session[:ratings]
     
-    if params[:commit] == 'Refresh'
-      @movies = Movie.order(@by_column).where(rating: @select_ratings)
     else
-      @movies = Movie.order(@by_column)
+      @selections = @all_ratings
     end
-    
-    session[:id] = @by_column
+    if params[:id]
+      @movies = Movie.order(params[:id].gsub(/_header/,"").to_sym).
+      where(rating: @selections)
+      params[:id] =~ /title/ ? (@t,@r = "hilite","") : (@r,@t = "hilite","")
+      session[:id] = params[:id] 
+    else
+      params[:id] = session[:id]
+      @movies = Movie.order(:id).where(rating: @selections)
+      @t,@r = '',''
+    end
   end
 
   def new
