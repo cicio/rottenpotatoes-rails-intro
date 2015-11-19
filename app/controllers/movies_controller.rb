@@ -1,9 +1,5 @@
 class MoviesController < ApplicationController
 
-  def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
-  end
-
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
@@ -19,13 +15,19 @@ class MoviesController < ApplicationController
     else
         @select_ratings = session[:ratings] || @all_ratings
     end
-    session[:ratings] = @select_ratings
+    
     @by_column = params[:sort_order] || session[:sort_order]
     (@t,@r = '','') unless @by_column
     (@t,@r = "hilite","") if  @by_column =~ /title/
     (@r,@t = "hilite","") if  @by_column =~ /release_date/
+    
+    if params[:sort_order] != session[:sort_order] or params[:ratings] != session[:ratings]
+        session[:ratings] = @select_ratings
+        session[:sort_order] = @by_column
+        redirect_to movies_path :sort_order => @by_column, :ratings => @select_ratings and return
+    end
     @movies = Movie.order(@by_column).where(rating: @select_ratings)
-    session[:sort_order] = @by_column
+    
   end
 
   def new

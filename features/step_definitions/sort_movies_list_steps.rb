@@ -59,10 +59,10 @@ end
 When(/^I sort the movies by "(.*?)"$/) do |sort_criteria|
   if sort_criteria =~ /title/
     click_link("Movie Title")
-    @movies=Movie.all.order('title')
+    @movies=Movie.order('title')
   elsif sort_criteria =~ /release_date/
     click_link("Release Date")
-    @movies = Movie.all.order('release_date')
+    @movies = Movie.order('release_date')
   end
 end
 
