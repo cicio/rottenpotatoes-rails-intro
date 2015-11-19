@@ -12,9 +12,13 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
-
-    params[:ratings].respond_to?(:keys) ? @select_ratings = params[:ratings].keys :
-        								  @select_ratings = params[:ratings] || session[:ratings]
+    if (params[:ratings] and params[:commit] == 'Refresh')
+        @select_ratings = params[:ratings].keys
+    elsif params[:ratings]
+        @select_ratings = params[:ratings]
+    else
+        @select_ratings = session[:ratings] || @all_ratings
+    end
     session[:ratings] = @select_ratings
     @by_column = params[:sort_order] || session[:sort_order]
     (@t,@r = '','') unless @by_column

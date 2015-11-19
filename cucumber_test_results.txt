@@ -1,0 +1,78 @@
+Using the default profile...
+Feature: Filter the list of movies by rating
+  
+  As a parent of movie loving children
+  In order to allow the children to select age appropriate movies
+  I want to be able to filter movie list by ratings
+
+  Background:                         # features/filter_movies_by_rating.feature:7
+    Given the following movies exist: # features/step_definitions/sort_movies_list_steps.rb:1
+      | title            | rating | release_date |
+      | Inception        | PG-13  | 2010-07-16   |
+      | It's Complicated | R      | 2009-12-25   |
+      | SaaS The Movie   | G      | 2012-01-14   |
+      | Cicio The SaaSy  | PG     | 2015-01-14   |
+
+  Scenario: Add checkboxes for filtering the list of movies                # features/filter_movies_by_rating.feature:16
+    When I visit the "index" page                                          # features/step_definitions/sort_movies_list_steps.rb:13
+    Then I should see check boxes for all movie ratings                    # features/step_definitions/filter_movies_by_rating_steps.rb:1
+    And the check boxes should be within an element with id:"ratings_form" # features/step_definitions/filter_movies_by_rating_steps.rb:7
+
+  Scenario: Show only movies with selected MPAA ratings    # features/filter_movies_by_rating.feature:22
+    Given I check the following boxes:"G, PG"              # features/step_definitions/filter_movies_by_rating_steps.rb:17
+    When I click on "Refresh"                              # features/step_definitions/sort_movies_list_steps.rb:38
+    Then I should see "Cicio The SaaSy" within "tbody"     # features/step_definitions/sort_movies_list_steps.rb:25
+    And I should see "SaaS The Movie" within "tbody"       # features/step_definitions/sort_movies_list_steps.rb:25
+    But I should not see "Inception" within "tbody"        # features/step_definitions/sort_movies_list_steps.rb:31
+    And I should not see "It's Complicated" within "tbody" # features/step_definitions/sort_movies_list_steps.rb:31
+    And I should see checkboxes "G, PG" as "checked"       # features/step_definitions/filter_movies_by_rating_steps.rb:41
+    And I should see checkboxes "R, PG-13" as "unchecked"  # features/step_definitions/filter_movies_by_rating_steps.rb:41
+
+  Scenario: Selected movies by rating should not alter the displayed order # features/filter_movies_by_rating.feature:32
+    Given I visit the "index" page                                         # features/step_definitions/sort_movies_list_steps.rb:13
+    When I sort the movies by "title"                                      # features/step_definitions/sort_movies_list_steps.rb:59
+    And I check the following boxes:"G, PG-13"                             # features/step_definitions/filter_movies_by_rating_steps.rb:17
+    And I click on "Refresh"                                               # features/step_definitions/sort_movies_list_steps.rb:38
+    Then I should see the "title_header" background color as "yellow"      # features/step_definitions/sort_movies_list_steps.rb:69
+    And I should see "Cicio The SaaSy" before "SaaS The Movie"             # features/step_definitions/sort_movies_list_steps.rb:52
+    And I should see checkboxes "G, PG-13" as "checked"                    # features/step_definitions/filter_movies_by_rating_steps.rb:41
+    And I should see checkboxes "PG, R" as "unchecked"                     # features/step_definitions/filter_movies_by_rating_steps.rb:41
+
+Feature: Sort List of Movies
+  
+  As a movie's Reviewer
+  In order to easily find the movies I want to review
+  I want to sort the movies by title or release date in ascending order
+
+  Background:                         # features/sort_movie_list.feature:10
+    Given the following movies exist: # features/step_definitions/sort_movies_list_steps.rb:1
+      | title            | rating | release_date |
+      | Inception        | PG-13  | 2010-07-16   |
+      | It's Complicated | R      | 2009-12-25   |
+      | SaaS The Movie   | G      | 2012-01-14   |
+
+  Scenario: Make the column headings for "Movie Title" and "Release Date" into clickable links # features/sort_movie_list.feature:18
+    When I visit the "index" page                                                              # features/step_definitions/sort_movies_list_steps.rb:13
+    Then I should see link for "Movie Title" and "Release Date" within "thead"                 # features/step_definitions/sort_movies_list_steps.rb:18
+    But I should see "Rating" within "thead"                                                   # features/step_definitions/sort_movies_list_steps.rb:25
+
+  Scenario: Clicking "Movie Title" reloads movies sorted in ascending order by title. # features/sort_movie_list.feature:23
+    Given I have clicked to sort by "Movie Title" from the "index" page               # features/step_definitions/sort_movies_list_steps.rb:44
+    Then I should see "Inception" before "It's Complicated"                           # features/step_definitions/sort_movies_list_steps.rb:52
+    And I should see "It's Complicated" before "SaaS The Movie"                       # features/step_definitions/sort_movies_list_steps.rb:52
+
+  Scenario: Clicking "Release Date" reloads movies sorted in ascending order by release date. # features/sort_movie_list.feature:29
+    Given I have clicked to sort by "Release Date" from the "index" page                      # features/step_definitions/sort_movies_list_steps.rb:44
+    Then I should see "It's Complicated" before "Inception"                                   # features/step_definitions/sort_movies_list_steps.rb:52
+    And I should see "It's Complicated" before "SaaS The Movie"                               # features/step_definitions/sort_movies_list_steps.rb:52
+
+  Scenario: Highlight sorting column head with Yellow background color       # features/sort_movie_list.feature:34
+    Given I am on the "index" page                                           # features/step_definitions/sort_movies_list_steps.rb:13
+    When I sort the movies by "title"                                        # features/step_definitions/sort_movies_list_steps.rb:59
+    Then I should see the "title_header" background color as "yellow"        # features/step_definitions/sort_movies_list_steps.rb:69
+    When I sort the movies by "release_date"                                 # features/step_definitions/sort_movies_list_steps.rb:59
+    Then I should see the "release_date_header" background color as "yellow" # features/step_definitions/sort_movies_list_steps.rb:69
+
+7 scenarios (7 passed)
+40 steps (40 passed)
+0m0.838s
